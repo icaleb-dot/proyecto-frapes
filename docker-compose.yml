@@ -1,0 +1,65 @@
+services:
+  app:
+    build: .
+    container_name: frapes-app
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - CASSANDRA_CONTACT_POINT=${CASSANDRA_CONTACT_POINT}
+      - CASSANDRA_DATACENTER=${CASSANDRA_DATACENTER}
+      - CASSANDRA_KEYSPACE=${CASSANDRA_KEYSPACE}
+    depends_on:
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+      cassandra:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:latest
+    container_name: frapes-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: frapes-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cassandra:
+    image: cassandra:latest
+    container_name: frapes-cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_START_RPC=true
+      - CASSANDRA_CLUSTER_NAME=FrapesCluster
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'SELECT cluster_name FROM system.local'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+volumes:
+  mongo-data:
