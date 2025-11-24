@@ -1,17 +1,17 @@
 services:
   app:
-    build: .
+    build: ./backend
     container_name: frapes-app
     ports:
       - "3001:3001"
     environment:
-      - PORT=${PORT}
-      - MONGO_URI=${MONGO_URI}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - CASSANDRA_CONTACT_POINT=${CASSANDRA_CONTACT_POINT}
-      - CASSANDRA_DATACENTER=${CASSANDRA_DATACENTER}
-      - CASSANDRA_KEYSPACE=${CASSANDRA_KEYSPACE}
+      - PORT=3001
+      - MONGO_URI=mongodb://mongo:27017/frapes_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CASSANDRA_CONTACT_POINT=cassandra
+      - CASSANDRA_DATACENTER=datacenter1
+      - CASSANDRA_KEYSPACE=frapes_analytics
     depends_on:
       mongo:
         condition: service_started
@@ -19,6 +19,20 @@ services:
         condition: service_started
       cassandra:
         condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: frapes-front
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app            # Espejo: Lo que editas en Windows se ve en Docker
+      - /app/node_modules       # Truco: Evita que tu node_modules local vacío borre el del contenedor
+    environment:
+      # Vite requiere esto para trabajar bien dentro de Docker
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - app
 
   mongo:
     image: mongo:latest

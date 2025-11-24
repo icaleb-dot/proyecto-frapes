@@ -55,3 +55,10 @@ GET http://localhost:3001/api/orders
 
 6. Ver analiticas (cassandra)
 GET http://localhost:3001/api/analytics/dashboard
+
+
+SEEDING EN TERMINAL
+MENU:
+docker exec -it frapes-app node seedMenu.js
+ADMINISTRADOR:
+docker exec -it frapes-app node createAdmin.js
