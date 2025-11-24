@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose'); // <--- IMPORTAR
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const userSchema = new mongoose.Schema({
   nombre: {
@@ -14,9 +14,6 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
-  // ¡YA NO NECESITAS EL CAMPO PASSWORD AQUÍ!
-  // El plugin se encarga de crear 'hash' y 'salt' internamente.
-  
   rol: {
     type: String,
     enum: ['cliente', 'admin', 'empleado'],

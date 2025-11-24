@@ -6,6 +6,9 @@ const userController = require('../controllers/userController');
 // Descripción: Crear un nuevo cliente
 router.post('/register', userController.registrar);
 
+// Ruta: POST /api/users/login
+router.post('/login', userController.login);
+
 // Ruta: GET /api/users/:id
 // Descripción: Obtener datos de un usuario por su ID
 router.get('/:id', userController.obtenerPerfil);

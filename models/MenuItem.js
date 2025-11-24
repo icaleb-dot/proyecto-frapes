@@ -1,22 +1,27 @@
 const mongoose = require('mongoose');
 
 const MenuItemSchema = new mongoose.Schema({
-  name: {
+  nombre: {
     type: String,
     required: true,
     trim: true,
   },
-  price: {
+  precio: {
     type: Number,
     required: true,
   },
-  category: {
+  categoria: {
     type: String,
     required: true,
-    enum: ['frappe', 'fresas_con_crema', 'topping'],
+    enum: ['frappe', 'fresas_c_crema', 'topping'],
   },
-  description: {
+  tamano: {
     type: String,
+    required: true,
+    enum: ['chico', 'mediano', 'grande'],
+  },
+  descripcion: {
+    type: String, 
   },
 });
 

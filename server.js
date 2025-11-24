@@ -3,37 +3,37 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
-const User = require('./models/User'); // Importa tu modelo
+const User = require('./models/User');
 
-// Importar Conexiones
+
 const connectDB = require('./config/dbMongo');
 const { connectRedis } = require('./config/dbRedis');
 const { connectCassandra } = require('./config/dbCassandra');
 
-// Importar Rutas
+
 const menuRoutes = require('./routes/menuRoutes');
 // const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
-// Inicializar App
 const app = express();
 
-// Configuración de Sesión (necesaria para login persistente)
+
 app.use(session({
-  secret: 'frapes_secreto_super_seguro', // Cambia esto por una variable de entorno en producción
+  secret: 'frapes_secreto_super_seguro', //cambiar esto por una variable de entorno en produccion
   resave: false,
   saveUninitialized: false
 }));
 
-// Inicializar Passport
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Configurar la estrategia (el plugin lo hace fácil)
+
 passport.use(User.createStrategy());
 
-// Serialización (cómo guardar el usuario en la sesión)
+//(cómo guardar el usuario en la sesión)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -53,8 +53,8 @@ const startServer = async () => {
     // app.use('/api/auth', authRoutes);
     app.use('/api/users', userRoutes);
     app.use('/api/orders', orderRoutes);
+    app.use('/api/analytics', analyticsRoutes);
 
-    // Iniciar el servidor
     const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
