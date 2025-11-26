@@ -61,4 +61,4 @@ SEEDING EN TERMINAL
 MENU:
 docker exec -it frapes-app node seedMenu.js
 ADMINISTRADOR:
-docker exec -it frapes-app node createAdmin.js
+docker exec -it frapes-app node createAdmin.js"# proyecto-frapes" 
