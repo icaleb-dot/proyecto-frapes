@@ -2,6 +2,7 @@ services:
   app:
     build: ./backend
     container_name: frapes-app
+    restart: always
     ports:
       - "3001:3001"
     environment:
@@ -14,33 +15,46 @@ services:
       - CASSANDRA_KEYSPACE=frapes_analytics
     depends_on:
       mongo:
-        condition: service_started
+        condition: servicevx_started
       redis:
         condition: service_started
       cassandra:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # Limita el backend para dejar espacio a la BD
 
   frontend:
     build: ./frontend
     container_name: frapes-front
+    restart: always
     ports:
       - "5173:5173"
-    volumes:
-      - ./frontend:/app            # Espejo: Lo que editas en Windows se ve en Docker
-      - /app/node_modules       # Truco: Evita que tu node_modules local vacío borre el del contenedor
     environment:
-      # Vite requiere esto para trabajar bien dentro de Docker
+      # OJO: Aquí deberás poner la IP Pública de tu VM en producción
+      # Ejemplo: VITE_API_URL=http://34.12.14.55:3001/api
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api}
       - CHOKIDAR_USEPOLLING=true
     depends_on:
       - app
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   mongo:
     image: mongo:latest
     container_name: frapes-mongo
+    restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    deploy:
+      resources:
+        limits:
+          memory: 512M # Mongo es eficiente, con 512MB aguanta proyectos escolares
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -50,8 +64,13 @@ services:
   redis:
     image: redis:alpine
     container_name: frapes-redis
+    restart: always
     ports:
       - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 256M # Redis gasta muy poca RAM
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -61,19 +80,29 @@ services:
   cassandra:
     image: cassandra:latest
     container_name: frapes-cassandra
+    restart: always
     ports:
-      - "9042:9042"
+      - "9042:9042" # Puerto nativo
     environment:
       - CASSANDRA_DC=datacenter1
       - CASSANDRA_RACK=rack1
       - CASSANDRA_START_RPC=true
       - CASSANDRA_CLUSTER_NAME=FrapesCluster
+      # --- CONFIGURACIÓN CRÍTICA PARA VM PEQUEÑA ---
+      # Limita la memoria Java a 512MB. Sin esto, la VM explota.
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+    deploy:
+      resources:
+        limits:
+          memory: 1G # Le damos hasta 1GB al contenedor (512MB Heap + Overhead del OS)
+          cpus: '1.5'
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'SELECT cluster_name FROM system.local'"]
-      interval: 15s
-      timeout: 10s
+      interval: 30s # Aumenté el intervalo porque Java tarda en arrancar
+      timeout: 20s
       retries: 10
-      start_period: 40s
+      start_period: 60s
 
 volumes:
   mongo-data:
