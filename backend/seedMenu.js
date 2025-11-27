@@ -43,10 +43,7 @@ const productos = [
 
 const seedDB = async () => {
   try {
-    // Conexión a la BD
-    // IMPORTANTE: Si corres este script desde tu terminal Windows, usa 'localhost'.
-    // Si lo corres dentro de Docker, la variable de entorno ya apuntará a 'mongo'.
-    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/frapes_db';
+    const uri = process.env.MONGO_URI || 'mongodb://mongo:27017/frapes_db';
     
     await mongoose.connect(uri);
     console.log('🔌 Conectado a MongoDB para la siembra de datos');

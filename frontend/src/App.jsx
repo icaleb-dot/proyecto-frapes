@@ -3,8 +3,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Componentes de Layout
-import Header from './components/Layout/Header';
-import Footer from './components/Layout/Footer';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 
 // Componente de Utilidad
 import ProtectedRoute from './components/ProtectedRoute';

@@ -1,8 +1,7 @@
 // src/api/menu.js
 import axios from 'axios';
 
-// ** IMPORTANTE: Cambia esto a la URL de tu servidor backend **
-const API_BASE_URL = 'http://localhost:3001/api/menu';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/menu`;
 
 /**
  * Obtiene el menú completo de la cafetería.
@@ -10,7 +9,6 @@ const API_BASE_URL = 'http://localhost:3001/api/menu';
  */
 export const getMenu = async () => {
   try {
-    // Tu backend usa esta ruta para servir desde Redis si es posible
     const response = await axios.get(API_BASE_URL);
     return response.data;
   } catch (error) {

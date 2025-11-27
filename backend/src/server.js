@@ -33,12 +33,11 @@ app.use(passport.session());
 
 passport.use(User.createStrategy());
 
-//(cómo guardar el usuario en la sesión)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://34.122.22.12:5173'],
   credentials: true
 };
 // Middlewares

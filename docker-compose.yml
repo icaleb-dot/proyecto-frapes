@@ -15,7 +15,7 @@ services:
       - CASSANDRA_KEYSPACE=frapes_analytics
     depends_on:
       mongo:
-        condition: servicevx_started
+        condition: service_started
       redis:
         condition: service_started
       cassandra:
@@ -23,7 +23,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M  # Limita el backend para dejar espacio a la BD
+          memory: 512M
 
   frontend:
     build: ./frontend
@@ -34,7 +34,7 @@ services:
     environment:
       # OJO: Aquí deberás poner la IP Pública de tu VM en producción
       # Ejemplo: VITE_API_URL=http://34.12.14.55:3001/api
-      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api}
+      - VITE_API_URL=${VITE_API_URL:-http://34.122.22.12:3001/api}
       - CHOKIDAR_USEPOLLING=true
     depends_on:
       - app
@@ -54,7 +54,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M # Mongo es eficiente, con 512MB aguanta proyectos escolares
+          memory: 512M
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
@@ -70,7 +70,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M # Redis gasta muy poca RAM
+          memory: 256M
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -88,18 +88,16 @@ services:
       - CASSANDRA_RACK=rack1
       - CASSANDRA_START_RPC=true
       - CASSANDRA_CLUSTER_NAME=FrapesCluster
-      # --- CONFIGURACIÓN CRÍTICA PARA VM PEQUEÑA ---
-      # Limita la memoria Java a 512MB. Sin esto, la VM explota.
       - MAX_HEAP_SIZE=512M
       - HEAP_NEWSIZE=100M
     deploy:
       resources:
         limits:
-          memory: 1G # Le damos hasta 1GB al contenedor (512MB Heap + Overhead del OS)
+          memory: 1G
           cpus: '1.5'
     healthcheck:
       test: ["CMD-SHELL", "cqlsh -e 'SELECT cluster_name FROM system.local'"]
-      interval: 30s # Aumenté el intervalo porque Java tarda en arrancar
+      interval: 30s
       timeout: 20s
       retries: 10
       start_period: 60s

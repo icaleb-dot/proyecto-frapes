@@ -1,8 +1,7 @@
 // src/api/orders.js
 import axios from 'axios';
 
-// ** IMPORTANTE: Cambia esto a la URL de tu servidor backend **
-const API_BASE_URL = 'http://localhost:3001/api/orders';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/menu`;
 
 /**
  * Crea un nuevo pedido a partir del carrito (Checkout).
